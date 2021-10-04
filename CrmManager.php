@@ -12,14 +12,24 @@ use InvalidArgumentException;
  */
 class CrmManager
 {
-    private BazSender $client;
-
     /**
+     * Credentials for specified crm
      * @var array
      */
-    private $settings;
+    private array $settings;
 
-    public function __construct(array $settings)
+    /**
+     * Logic of specified crm
+     * @var CrmSenderInterface
+     */
+    private CrmSenderInterface $client;
+
+    /**
+     * CrmManager constructor which injects logic of crm
+     * @param array $settings
+     * @param CrmSenderInterface $client
+     */
+    public function __construct(array $settings, CrmSenderInterface $client)
     {
         if (empty($settings['user'])) {
             throw new InvalidArgumentException('User must be set!');
@@ -30,7 +40,7 @@ class CrmManager
         }
 
         $this->settings = $settings;
-        $this->client = new BazSender();
+        $this->client = $client;
     }
 
     /**
@@ -46,3 +56,9 @@ class CrmManager
         return $this->client->send($clientEntity);
     }
 }
+
+
+// Client's code example:
+// $crm = new BazSender();  or  $crm = new FooSender();
+// $cli = new CrmManager(['user','passwd'], $crm);
+// $cli->sendPerson(['a','b','c']);
